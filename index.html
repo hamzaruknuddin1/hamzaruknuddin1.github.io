@@ -1,38 +1,26 @@
 <!DOCTYPE html>
 <html>
 <body>
+  <!-- The Gruveo embed's <iframe> will replace this <div> tag. -->
   <div id="myembed"></div>
  
   <script>
-    var clientId = "demo";
- 
+    // This code loads the Gruveo Embed API code asynchronously.
     var tag = document.createElement("script");
     tag.src = "https://www.gruveo.com/embed-api/";
     var firstScriptTag = document.getElementsByTagName("script")[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
  
+    // This function gets called after the API code downloads. It creates
+    // the actual Gruveo embed and passes parameters to it.
     var embed;
     function onGruveoEmbedAPIReady() {
       embed = new Gruveo.Embed("myembed", {
-        responsive : 1,
+        responsive: 1,
         embedParams: {
-          clientid: clientId,
-          color: "63b2de",
-          branding: 0,
-          code : "logic3"
+          code: "logic3"
         }
       });
- 
-      //embed.on("requestToSignApiAuthToken", onEmbedRequestToSignApiAuthToken);
-    }
- 
-    function onEmbedRequestToSignApiAuthToken(e) {
-      var tokenHmac;
-      // ...
-      // Compute the HMAC of e.token. Do it server-side only so you don't
-      // expose your API secret in the client code!
-      // ...
-      embed.authorize(tokenHmac);
     }
   </script>
 </body>
