@@ -5,6 +5,7 @@
   <div id="myembed"></div>
  
   <script>
+    var clientId = "demo";
     // This code loads the Gruveo Embed API code asynchronously.
     var tag = document.createElement("script");
     tag.src = "https://www.gruveo.com/embed-api/";
@@ -18,10 +19,26 @@
       embed = new Gruveo.Embed("myembed", {
         responsive: 1,
         embedParams: {
-          code: "logic3"
+          code: "logic3",
+          clientid: clientId,
+          color: "63b2de",
+          branding: 0
         }
       });
+
+       embed.on("requestToSignApiAuthToken", onEmbedRequestToSignApiAuthToken);
+
     }
+
+    function onEmbedRequestToSignApiAuthToken(e) {
+      var tokenHmac = "W62wB9JjW3tFyUMtF5QhRSbk";
+      // ...
+      // Compute the HMAC of e.token. Do it server-side only so you don't
+      // expose your API secret in the client code!
+      // ...
+      embed.authorize(tokenHmac);
+    }
+
   </script>
 </body>
 </html>
