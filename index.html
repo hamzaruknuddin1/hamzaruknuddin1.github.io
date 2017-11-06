@@ -1,27 +1,80 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <title></title>
+
+</head>
 <body>
-  <!-- The Gruveo embed's <iframe> will replace this <div> tag. -->
-  <div id="myembed"></div>
- 
-  <script>
-    // This code loads the Gruveo Embed API code asynchronously.
-    var tag = document.createElement("script");
-    tag.src = "https://www.gruveo.com/embed-api/";
-    var firstScriptTag = document.getElementsByTagName("script")[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
- 
-    // This function gets called after the API code downloads. It creates
-    // the actual Gruveo embed and passes parameters to it.
-    var embed;
-    function onGruveoEmbedAPIReady() {
-      embed = new Gruveo.Embed("myembed", {
-        responsive: 1,
-        embedParams: {
-          code: "logic3"
-        }
-      });
+  <video id = "vid" autoplay></video>
+<img src="">
+<canvas ></canvas>
+
+<script>
+  var video = document.querySelector('video');
+  var canvas = document.querySelector('canvas');
+  var ctx = canvas.getContext('2d');
+  var localMediaStream = null;
+
+  function snapshot() {
+    if (localMediaStream) {
+      ctx.drawImage(video, 0, 0,canvas.width, canvas.height);
+      // "image/webp" works in Chrome.
+      // Other browsers will fall back to image/png.
+
+      console.log(canvas.toDataURL('image/webp'));
+
+      //document.querySelector('img').src = canvas.toDataURL('image/webp');
+      document.getElementById('vid').style.display = "none";
     }
-  </script>
+  }
+
+  video.addEventListener('click', snapshot, false);
+
+    var errorCallback = function(e) {
+      console.log('Reeeejected!', e);
+    };
+
+  // Not showing vendor prefixes or code that works cross-browser.
+  navigator.getUserMedia({video: true}, function(stream) {
+    video.src = window.URL.createObjectURL(stream);
+    localMediaStream = stream;
+  }, errorCallback);
+
+  function hasGetUserMedia() {
+      return !!(navigator.getUserMedia || navigator.webkitGetUserMedia ||
+            navigator.mozGetUserMedia || navigator.msGetUserMedia);
+  }
+
+  if (hasGetUserMedia()) {
+      //alert('yup');
+  } else {
+      alert('getUserMedia() is not supported in your browser');
+  }
+
+
+  
+
+  // Not showing vendor prefixes.
+  // navigator.getUserMedia({video: true, audio: true}, function(localMediaStream) {
+  //   var video = document.querySelector('video');
+  //   video.src = window.URL.createObjectURL(localMediaStream);
+
+  //   // Note: onloadedmetadata doesn't fire in Chrome when using it with getUserMedia.
+  //   // See crbug.com/110938.
+  //   video.onloadedmetadata = function(e) {
+  //     // Ready to go. Do some stuff.
+  //   };
+  // }, errorCallback);
+
+</script>
+<script src="http://cdn.peerjs.com/0.3/peer.min.js"></script>
 </body>
+
+
+
+<script type="text/javascript">
+  
+  
+
+</script>
 </html>
