@@ -1,80 +1,85 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title></title>
-
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <body>
-  <video id = "vid" autoplay></video>
-<img src="">
-<canvas ></canvas>
+  <div id="myembed"></div>
+ 
+  <script>
+  var tokenHmac;
+  function signToken(Data,callback){
+      $.ajax({
+          dataType: "json",
+          type: 'POST',
+          url: 'https://31.186.241.162/final/testPrint.php',
+          contentType: "application/json; charset=utf-8",
+          data : JSON.stringify(Data),
+          beforeSend: function(xhr) {
+              xhr.setRequestHeader("Content-Type", "application/json");
+              xhr.setRequestHeader("Access-Control-Allow-Headers", "*"); 
+              xhr.setRequestHeader("Access-Control-Allow-Origin", "*"); 
+              xhr.setRequestHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS"); 
+              
+               // more as you need
+              },
 
-<script>
-  var video = document.querySelector('video');
-  var canvas = document.querySelector('canvas');
-  var ctx = canvas.getContext('2d');
-  var localMediaStream = null;
+          success: function(val){
+              callback(val);
+          },
+          error : function(err){
+              console.dir(err);
+              callback(err);
 
-  function snapshot() {
-    if (localMediaStream) {
-      ctx.drawImage(video, 0, 0,canvas.width, canvas.height);
-      // "image/webp" works in Chrome.
-      // Other browsers will fall back to image/png.
+          }
+        });
+  }
 
-      console.log(canvas.toDataURL('image/webp'));
 
-      //document.querySelector('img').src = canvas.toDataURL('image/webp');
-      document.getElementById('vid').style.display = "none";
+    var clientId = "demo";
+ 
+    var tag = document.createElement("script");
+    tag.src = "https://www.gruveo.com/embed-api/";
+    var firstScriptTag = document.getElementsByTagName("script")[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+ 
+    var embed;
+    function onGruveoEmbedAPIReady() {
+      embed = new Gruveo.Embed("myembed", {
+        width: 680,
+        height: 465,
+        embedParams: {
+          clientid: clientId,
+          color: "63b2de",
+          branding: 0
+        }
+      });
+ 
+      embed
+        .on("error", onEmbedError)
+        .on("requestToSignApiAuthToken", onEmbedRequestToSignApiAuthToken);
     }
-  }
-
-  video.addEventListener('click', snapshot, false);
-
-    var errorCallback = function(e) {
-      console.log('Reeeejected!', e);
-    };
-
-  // Not showing vendor prefixes or code that works cross-browser.
-  navigator.getUserMedia({video: true}, function(stream) {
-    video.src = window.URL.createObjectURL(stream);
-    localMediaStream = stream;
-  }, errorCallback);
-
-  function hasGetUserMedia() {
-      return !!(navigator.getUserMedia || navigator.webkitGetUserMedia ||
-            navigator.mozGetUserMedia || navigator.msGetUserMedia);
-  }
-
-  if (hasGetUserMedia()) {
-      //alert('yup');
-  } else {
-      alert('getUserMedia() is not supported in your browser');
-  }
-
-
-  
-
-  // Not showing vendor prefixes.
-  // navigator.getUserMedia({video: true, audio: true}, function(localMediaStream) {
-  //   var video = document.querySelector('video');
-  //   video.src = window.URL.createObjectURL(localMediaStream);
-
-  //   // Note: onloadedmetadata doesn't fire in Chrome when using it with getUserMedia.
-  //   // See crbug.com/110938.
-  //   video.onloadedmetadata = function(e) {
-  //     // Ready to go. Do some stuff.
-  //   };
-  // }, errorCallback);
-
-</script>
-<script src="http://cdn.peerjs.com/0.3/peer.min.js"></script>
+ 
+    function onEmbedError(e) {
+      console.error("Received error " + e.error + ".");
+    }
+ 
+    function onEmbedRequestToSignApiAuthToken(e) {
+      console.log(e.token);
+      var data = {
+        'token' : e.token
+      };
+      
+      signToken(data,function(response){
+          tokenHmac = response['hmac'];
+          console.log(response);
+          embed.authorize(tokenHmac);
+      });
+      // ...
+      // Compute the HMAC of e.token. Do it server-side only so you don't
+      // expose your API secret in the client code!
+      // ...
+    }
+  </script>
 </body>
-
-
-
-<script type="text/javascript">
-  
-  
-
-</script>
 </html>
